@@ -1,0 +1,20 @@
+{
+  "name": "devtinder",
+  "version": "1.0.0",
+  "description": "Tinder for devs",
+  "main": "index.js",
+  "scripts": {
+    "start" : "node src/app.js",
+    "dev" : "nodemon src/app.js"
+  },
+  "keywords": [
+    "Nodejs",
+    "Javascript",
+    "backend"
+  ],
+  "author": "Murari Kothamasu",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}
