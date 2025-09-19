@@ -11,16 +11,8 @@ const validateSignupData = (req) => {
   }
 };
 
-const validateUpdateUserData = (req) => {
-  const ALLOWED_UPDATES = ["photoUrl", "gender", "age", "about", "password"];
-  const isUpdateAllowed = Object.keys(req.body).every((k) => {
-    return ALLOWED_UPDATES.includes(k);
-  });
-  if (!isUpdateAllowed) {
-    throw new Error("Updation is not Allowed");
-  }
-};
+
 
 module.exports = {
-  validateSignupData, validateUpdateUserData
+  validateSignupData
 };
