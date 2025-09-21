@@ -2,6 +2,7 @@ const express = require("express")
 const { validateSignupData } = require("../utils/validator");
 const { User } = require("../models/user");
 const bcrypt = require("bcrypt");
+const { userAuth } = require("../middlewares/admin");
 const authRouter = express.Router()
 
 authRouter.post("/signup", async (req, res) => {
@@ -45,5 +46,11 @@ authRouter.post("/login", async (req, res) => {
     res.status(400).send("ERROR : " + " " + error.message);
   }
 });
+
+authRouter.post("/logout" , userAuth , async (req , res)=>{
+  res.clearCookie("token")
+  res.send("Logged Out!!!!")
+
+})
 
 module.exports = authRouter

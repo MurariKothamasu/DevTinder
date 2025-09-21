@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
-const jwt = require("jsonwebtoken")
-const bcrypt = require("bcrypt")
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
 const userSchema = new mongoose.Schema(
   {
     firstName: {
@@ -9,9 +9,11 @@ const userSchema = new mongoose.Schema(
       required: true,
       minLength: 4,
       maxLength: 50,
+      trim: true,
     },
     lastName: {
       type: String,
+      trim: true,
     },
     email: {
       type: String,
@@ -24,7 +26,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
       trim: true,
-      minLength: 5
+      minLength: 5,
     },
     gender: {
       type: String,
@@ -56,24 +58,38 @@ const userSchema = new mongoose.Schema(
       default: "This is the default description about the user",
       maxLength: 500,
     },
+    skils: {
+      type: [String],
+      validate: {
+        validator(value) {
+          if (value.length > 10) {
+            throw new Error("You can only add up to 10 skills.");
+          }
+        },
+      },
+    },
   },
   {
     timestamps: true,
   }
 );
 
-userSchema.methods.getJwt = async function(){
-  const user = this
-  const token = await jwt.sign({_id : user._id} , "Chandrasai@192003" ,{expiresIn : "7d" })
-  return token
-} 
+userSchema.methods.getJwt = async function () {
+  const user = this;
+  const token = await jwt.sign({ _id: user._id }, "Chandrasai@192003", {
+    expiresIn: "7d",
+  });
+  return token;
+};
 
-userSchema.methods.validatePassword = async function(password){
-  const user = this
-  const passwordHash = user.password
-  const isValidPassword = await bcrypt.compare(password , passwordHash)
-  return isValidPassword
-}
+userSchema.methods.validatePassword = async function (password) {
+  const user = this;
+  const passwordHash = user.password;
+  const isValidPassword = await bcrypt.compare(password, passwordHash);
+  return isValidPassword;
+};
+
+
 
 const User = mongoose.model("User", userSchema);
 
