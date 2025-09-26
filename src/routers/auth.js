@@ -1,9 +1,9 @@
-const express = require("express")
+const express = require("express");
 const { validateSignupData } = require("../utils/validator");
 const { User } = require("../models/user");
 const bcrypt = require("bcrypt");
 const { userAuth } = require("../middlewares/admin");
-const authRouter = express.Router()
+const authRouter = express.Router();
 
 authRouter.post("/signup", async (req, res) => {
   try {
@@ -17,7 +17,7 @@ authRouter.post("/signup", async (req, res) => {
       email,
       password: passwordHash,
     });
-    await user.save({ validateBeforeSave: false });
+    await user.save();
     res.send("User Created Succefully");
   } catch (error) {
     res.status(500).send("error saving the user : " + "  " + error.message);
@@ -35,9 +35,9 @@ authRouter.post("/login", async (req, res) => {
       if (isValidPassword) {
         const token = await user.getJwt();
         res.cookie("token", token, {
-          expires: new Date(Date.now() + 8 * 3600000),
+          maxAge: 7 * 24 * 60 * 60 * 1000
         });
-        res.status(200).send("LoginSuccessfull!!!");
+        res.status(200).send(user);
       } else {
         throw new Error("Invalid Credentials");
       }
@@ -47,10 +47,9 @@ authRouter.post("/login", async (req, res) => {
   }
 });
 
-authRouter.post("/logout" , userAuth , async (req , res)=>{
-  res.clearCookie("token")
-  res.send("Logged Out!!!!")
+authRouter.post("/logout", userAuth, async (req, res) => {
+  res.clearCookie("token");
+  res.send("Logged Out!!!!");
+});
 
-})
-
-module.exports = authRouter
+module.exports = authRouter;
