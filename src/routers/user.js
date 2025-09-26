@@ -22,10 +22,6 @@ userRouter.get("/user/requests/received", userAuth, async (req, res) => {
       status: "intrested",
     }).populate("fromUserId", USER_PUBLIC_DATA);
 
-    if (requests.length == 0) {
-      return res.json({ message: "There is no requests" });
-    }
-
     res.status(200).send(requests);
   } catch (error) {
     res.status(400).send("ERROR : " + error.message);
@@ -51,7 +47,7 @@ userRouter.get("/user/connections", userAuth, async (req, res) => {
       return val.fromUserId;
     });
 
-    res.status(200).send(data);
+    res.json({ data });
   } catch (error) {
     res.status(400).send("ERROR : " + error.message);
   }

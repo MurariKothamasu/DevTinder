@@ -17,8 +17,12 @@ authRouter.post("/signup", async (req, res) => {
       email,
       password: passwordHash,
     });
-    await user.save();
-    res.send("User Created Succefully");
+    const newUser = await user.save();
+    const token = await user.getJwt();
+    res.cookie("token", token, {
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+    res.send(newUser);
   } catch (error) {
     res.status(500).send("error saving the user : " + "  " + error.message);
   }
@@ -35,7 +39,7 @@ authRouter.post("/login", async (req, res) => {
       if (isValidPassword) {
         const token = await user.getJwt();
         res.cookie("token", token, {
-          maxAge: 7 * 24 * 60 * 60 * 1000
+          maxAge: 7 * 24 * 60 * 60 * 1000,
         });
         res.status(200).send(user);
       } else {
