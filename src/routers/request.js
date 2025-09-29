@@ -3,6 +3,7 @@ const requestRouter = express.Router();
 const { userAuth } = require("../middlewares/admin");
 const { ConnectionRequest } = require("../models/connectionRequest");
 const { User } = require("../models/user");
+const sendEmail = require("../utils/sendEmail");
 
 requestRouter.post(
   "/request/send/:status/:toUserId",
@@ -47,17 +48,20 @@ requestRouter.post(
 
       const data = await connectionRequest.save();
 
-      const emailres = await sendEmail.run({
-        toAddress: toUser.email, // recipient’s email
-        fromAddress: "murari@codeconnects.in", // must be verified in SES
-        subject: `New ${status} request from ${req.user.firstName}`,
-        htmlBody: `
-          <h2>Hello ${toUser.firstName},</h2>
-          <p>You have received a new <b>${status}</b> request from <b>${req.user.firstName}</b>.</p>
-          <p>Please log in to review the request.</p>
-        `,
-        textBody: `Hello ${toUser.firstName},\n\nYou received a new ${status} request from ${req.user.firstName}.\nLog in to review it.`,
-      });
+      if (status !== "ignored") {
+        try {
+         const emailres =  await sendEmail.run({
+            toAddress: toUser.email,
+            fromAddress: "murari@codeconnects.in", // make sure this is verified in SES
+            subject: `New ${status} request from ${req.user.firstName}`,
+            htmlBody: `<h2>Hello ${toUser.firstName},</h2><p>You have received a new <b>${status}</b> request from <b>${req.user.firstName}</b>.</p><p>Please log in to review the request.</p>`,
+            textBody: `Hello ${toUser.firstName},\n\nYou received a new ${status} request from ${req.user.firstName}.\nLog in to review it.`,
+          });
+          console.log(emailres);
+        } catch (emailError) {
+          console.error("Failed to send email:", emailError);
+        }
+      }
 
       if (status === "ignored") {
         res.status(200).send("Ignoredd");
