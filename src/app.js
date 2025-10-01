@@ -7,7 +7,8 @@ const authRouter = require("./routers/auth")
 const profileRouter = require("./routers/profile")
 const request = require("./routers/request");
 const { userRouter } = require("./routers/user");
-
+const http = require("http")
+const {initializeSocket} = require("./utils/socket")
 const app = express();
 
 
@@ -25,13 +26,13 @@ app.use("/" , profileRouter)
 app.use("/" , request)
 app.use("/" , userRouter)
 
+const server = http.createServer(app) 
 
-
+initializeSocket(server)
 
 connectDB().then(() => {
   console.log("Connected to database");
-  app.listen(process.env.PORT, () => {
-    console.log(process.env.ACCESS_KEY_ID, process.env.SECRET_ACCESS_KEY);
+  server.listen(process.env.PORT, () => {
     console.log("Server Running on port 3000");
   });
 });
